@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { createReview } from "../api";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
 import "./ReviewForm.css";
@@ -11,8 +10,14 @@ const INITIAL_VALUES = {
   imgFile: null,
 };
 
-function ReviewFrom({ onSubmitSuccess }) {
-  const [values, setValues] = useState(INITIAL_VALUES);
+function ReviewFrom({
+  initialValues = INITIAL_VALUES,
+  initialPreview,
+  onSubmitSuccess,
+  onSubmit,
+  onCancle,
+}) {
+  const [values, setValues] = useState(initialValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittingError, setSubmittingError] = useState(null);
 
@@ -40,7 +45,7 @@ function ReviewFrom({ onSubmitSuccess }) {
     try {
       setSubmittingError(null);
       setIsSubmitting(true);
-      result = await createReview(formData);
+      result = await onSubmit(formData);
     } catch (error) {
       setSubmittingError(error);
       return;
@@ -48,8 +53,8 @@ function ReviewFrom({ onSubmitSuccess }) {
       setIsSubmitting(false);
     }
     const { review } = result;
-    onSubmitSuccess(review);
     setValues(INITIAL_VALUES);
+    onSubmitSuccess(review);
   };
 
   return (
@@ -58,6 +63,7 @@ function ReviewFrom({ onSubmitSuccess }) {
         name="imgFile"
         value={values.imgFile}
         onChange={handleChange}
+        initialPreview={initialPreview}
       />
       <input name="title" value={values.title} onChange={handleInputChange} />
       <RatingInput
@@ -70,6 +76,7 @@ function ReviewFrom({ onSubmitSuccess }) {
         value={values.content}
         onChange={handleInputChange}
       />
+      {onCancle && <button onClick={onCancle}>취소</button>}
       <button disabled={isSubmitting} type="submit">
         확인
       </button>
