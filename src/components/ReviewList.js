@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
-import LocaleContext from "../contexts/LocaleContext";
+import { useState } from "react";
+import useTranslate from "../hooks/useTranslate";
 import Rating from "./Rating";
-import ReviewFrom from "./ReviewForm";
+import ReviewForm from "./ReviewForm";
 import "./ReviewList.css";
 
 function formatDate(value) {
@@ -10,7 +10,7 @@ function formatDate(value) {
 }
 
 function ReviewListItem({ item, onDelete, onEdit }) {
-  const locale = useContext(LocaleContext);
+  const t = useTranslate();
 
   const handleDeleteClick = () => {
     onDelete(item.id);
@@ -28,9 +28,8 @@ function ReviewListItem({ item, onDelete, onEdit }) {
         <Rating value={item.rating} />
         <p>{formatDate(item.createdAt)}</p>
         <p>{item.content}</p>
-        <p>현재 언어: {locale}</p>
-        <button onClick={handleDeleteClick}>삭제</button>
-        <button onClick={handleEditClick}>수정</button>
+        <button onClick={handleDeleteClick}>{t("delete button")}</button>
+        <button onClick={handleEditClick}>{t("edit button")}</button>
       </div>
     </div>
   );
@@ -39,14 +38,14 @@ function ReviewListItem({ item, onDelete, onEdit }) {
 function ReviewList({ items, onDelete, onUpdate, onUpdateSuccess }) {
   const [editingId, setEditingId] = useState(null);
 
-  const hadleCancle = () => setEditingId(null);
+  const handleCancel = () => setEditingId(null);
 
   return (
     <ul>
       {items.map((item) => {
         if (item.id === editingId) {
           const { id, imgUrl, title, rating, content } = item;
-          const initialValues = { title, rating, content };
+          const initialValues = { title, rating, content, imgUrl: null };
 
           const handleSubmit = (formData) => onUpdate(id, formData);
 
@@ -57,10 +56,10 @@ function ReviewList({ items, onDelete, onUpdate, onUpdateSuccess }) {
 
           return (
             <li key={item.id}>
-              <ReviewFrom
+              <ReviewForm
                 initialValues={initialValues}
                 initialPreview={imgUrl}
-                onCancle={hadleCancle}
+                onCancel={handleCancel}
                 onSubmit={handleSubmit}
                 onSubmitSuccess={handleSubmitSuccess}
               />

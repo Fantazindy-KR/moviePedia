@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useAsync from "../hooks/useAsync";
+import useTranslate from "../hooks/useTranslate";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
 import "./ReviewForm.css";
@@ -11,13 +12,14 @@ const INITIAL_VALUES = {
   imgFile: null,
 };
 
-function ReviewFrom({
+function ReviewForm({
   initialValues = INITIAL_VALUES,
   initialPreview,
   onSubmitSuccess,
   onSubmit,
-  onCancle,
+  onCancel,
 }) {
+  const t = useTranslate();
   const [values, setValues] = useState(initialValues);
   const [isSubmitting, submittingError, onSubmitAsync] = useAsync(onSubmit);
 
@@ -68,13 +70,13 @@ function ReviewFrom({
         value={values.content}
         onChange={handleInputChange}
       />
-      {onCancle && <button onClick={onCancle}>취소</button>}
+      {onCancel && <button onClick={onCancel}>{t("cancel button")}</button>}
       <button disabled={isSubmitting} type="submit">
-        확인
+        {t("confirm button")}
       </button>
       {submittingError && <div>{submittingError.message}</div>}
     </form>
   );
 }
 
-export default ReviewFrom;
+export default ReviewForm;
